@@ -83,7 +83,7 @@ Bonus points if you're able to:
 
 ## Installation
 
-Files must be downloaded from Github. Then, run npm install to get the necessary node modules. Edit or duplicate the .env.EXAMPLE file to be just a .env file and fill in your MySql username and password. Last, run npm start.
+Files must be downloaded from Github. Then, run npm install to get the necessary node modules. Edit or duplicate the .env.EXAMPLE file to be just a .env file and fill in your MySql username and password. Open the seed.sql in MySql and run the file. Last, run npm start.
 
 ## Usage
 
