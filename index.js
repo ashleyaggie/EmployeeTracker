@@ -158,8 +158,11 @@ const removeEmp = () => {
             name: 'empId'
         })
         .then((ans) => {
-            runQuery(`DELETE FROM employee_db.employee WHERE id = ${ans.empId};`);
-            console.log("Employee id " + ans.empId + " has been deleted.");
+            connection.query(`DELETE FROM employee_db.employee WHERE id = ${ans.empId};`,(err, res) => {
+                if (err) throw err;
+                console.log("Employee id " + ans.empId + " has been deleted.");
+                init();
+            });
         })
     })
     
@@ -261,6 +264,7 @@ const addDept = () => {
         connection.query(`INSERT INTO department SET name = "${ans.name}"`, (err, res) => {
             if (err) throw err;
             console.log(`${ans.name} department has been created!`)
+            init();
         });
     })
 };
@@ -280,6 +284,7 @@ const removeDept = () => {
             connection.query(`DELETE FROM employee_db.department WHERE id = ${ans.deptId};`, (err, res) => {
                 if (err) throw err;
                 console.log("Department ID " + ans.deptId + " has been deleted.");
+                init();
             });
         })
     })
@@ -349,8 +354,11 @@ const removeRole = () => {
             name: 'roleId'
         })
         .then((ans) => {
-            runQuery(`DELETE FROM employee_db.role WHERE id = ${ans.roleId};`);
-            console.log("Role ID " + ans.roleId + " has been deleted.");
+            connection.query(`DELETE FROM employee_db.role WHERE id = ${ans.roleId};`, (err, res) => {
+                if (err) throw err;
+                console.log("Role ID " + ans.roleId + " has been deleted.");
+                init();
+            });
         })
     })
 }
