@@ -6,8 +6,8 @@ require('dotenv').config();
 const choiceOptions = ["View All Employees","View All Employees By Manager","View All Departments","View All Roles","Add Employee","Remove Employee","Update Employee Role","Update Employee Manager","Add Department","Add Role","Remove Department","Remove Role","Exit"];
 
 const connection = mysql.createConnection({
-    host: process.env.DB_host,
-    port: process.env.DB_port,
+    host: 'localhost',
+    port: process.env.PORT || 3306,
     user: process.env.DB_user,
     password: process.env.DB_pass,
     database: 'employee_db',
