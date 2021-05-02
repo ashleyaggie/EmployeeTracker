@@ -1,10 +1,13 @@
+// Requiring node modules
 const inquirer = require('inquirer');
 const mysql = require('mysql');
 require('console.table');
 require('dotenv').config();
 
+// Set an array of options for the initial prompt of choices
 const choiceOptions = ["View All Employees","View All Employees By Manager","View All Departments","View All Roles","Add Employee","Remove Employee","Update Employee Role","Update Employee Manager","Add Department","Add Role","Remove Department","Remove Role","Exit"];
 
+// Initialize mySql connection - DB_user and DB_pass are accessed from .env
 const connection = mysql.createConnection({
     host: 'localhost',
     port: process.env.PORT || 3306,
@@ -13,6 +16,7 @@ const connection = mysql.createConnection({
     database: 'employee_db',
 });
 
+// Initial function
 function init() {
     inquirer
     .prompt([{
@@ -70,6 +74,7 @@ function init() {
     .catch((err) => console.error(err))
 }
 
+// Basic function to run a simple query and console.table the results
 const runQuery = (query) => {
     connection.query(query, (err, res) => {
         if (err) throw err;
@@ -78,6 +83,7 @@ const runQuery = (query) => {
     });
 };
 
+// Get the manager names, show them as options, and send a query through runQuery with the specific manager's ID
 const runManagerQuest = () => {
     connection.query(`SELECT CONCAT(first_name,' ',last_name) AS name, employee.id FROM employee_db.employee WHERE manager_id IS NULL`, (err, res) => {
         if (err) throw err;
@@ -92,6 +98,7 @@ const runManagerQuest = () => {
             choices: manOptions
         })
         .then((ans) => {
+            // Get ID of manager chosen
             connection.query(`SELECT id FROM employee WHERE CONCAT(first_name,' ',last_name) = "${ans.manager}"`, (err, res) => {
                 if (err) throw err;
                 runQuery(`SELECT first_name, last_name, title, salary, name as department FROM employee_db.employee AS emp INNER JOIN employee_db.role AS rol ON emp.role_id = rol.id INNER JOIN employee_db.department AS dept ON department_id = dept.id WHERE manager_id = "${res[0].id}" ORDER BY emp.id;`)
@@ -101,9 +108,13 @@ const runManagerQuest = () => {
     
 };
 
+// Add an employee using INSERT
+// Runs query then shows the table with all employees to show it was created
 const addEmp = () => {
     connection.query(`SELECT title FROM employee_db.role;`, (err, res) => {
         if (err) throw err;
+
+        // Put all role options in an array to choose from
         let roleOptions = [];
         res.forEach((res) => {roleOptions.push(res.title)});
 
@@ -132,6 +143,7 @@ const addEmp = () => {
             }
         ])
         .then((ans) => {
+            // Get ID of role chosen
             connection.query(`SELECT id FROM employee_db.role WHERE title = "${ans.role_id}"`, (err, res) => {
                 if (err) throw err;
                 ans.role_id = res[0].id;
@@ -146,6 +158,8 @@ const addEmp = () => {
     })
 };
 
+// Remove an employee using DELETE
+// Did not use runQuery, did not want to console.table the response
 const removeEmp = () => {
     connection.query(`SELECT * FROM employee_db.employee;`, (err, res) => {
         if (err) throw err;
@@ -160,7 +174,7 @@ const removeEmp = () => {
         .then((ans) => {
             connection.query(`DELETE FROM employee_db.employee WHERE id = ${ans.empId};`,(err, res) => {
                 if (err) throw err;
-                console.log("Employee id " + ans.empId + " has been deleted.");
+                console.log("Employee ID " + ans.empId + " has been deleted.");
                 init();
             });
         })
@@ -168,11 +182,14 @@ const removeEmp = () => {
     
 };
 
+// Update employee using UPDATE SET
+// Did not use runQuery, did not want to console.table the response
 const updateEmp = (edit) => {
     connection.query(`SELECT * FROM employee_db.employee;`, (err, res) => {
         if (err) throw err;
         console.table(res);
 
+        // If the user wants to edit a Role
         if (edit === 'Role') {
             inquirer
             .prompt([
@@ -187,6 +204,7 @@ const updateEmp = (edit) => {
                     name: 'role_id'
                 }])
                 .then((ans) => {
+                    // Set role_id where employee's id equals the user's input
                     connection.query(`UPDATE employee SET ? WHERE ?`,
                     [
                         {
@@ -203,7 +221,9 @@ const updateEmp = (edit) => {
                     });
                 }
             )
-        } else if (edit === 'Manager') {
+        }
+        // If the user wants to edit the Manager
+        else if (edit === 'Manager') {
             inquirer
             .prompt([
                 {
@@ -217,6 +237,7 @@ const updateEmp = (edit) => {
                     name: 'manager_id'
                 }])
                 .then((ans) => {
+                    // Supposed to update the manager_id to NULL if the value of manager_id is empty
                     // This throws an error, but still updates
                     if (!ans.manager_id) {
                         connection.query(`UPDATE employee SET manager_id = NULL WHERE ?`,
@@ -232,6 +253,7 @@ const updateEmp = (edit) => {
                         })
                     }
 
+                    // Set manager_id where employee's id equals the user's input
                     connection.query(`UPDATE employee SET ? WHERE ?`,
                     [
                         {
@@ -253,6 +275,7 @@ const updateEmp = (edit) => {
     })
 };
 
+// Add a department using INSERT
 const addDept = () => {
     inquirer
     .prompt({
@@ -269,9 +292,11 @@ const addDept = () => {
     })
 };
 
+// Delete a department using DELETE
 const removeDept = () => {
     connection.query(`SELECT * FROM employee_db.department;`, (err, res) => {
         if (err) throw err;
+        // Shows all current departments and their ID's
         console.table(res);
 
         inquirer
@@ -291,60 +316,59 @@ const removeDept = () => {
     
 };
 
+// Add a role using INSERT
 const addRole = () => {
-    connection.query(`SELECT * FROM employee_db.role`, (err, res) => {
+    connection.query(`SELECT name FROM employee_db.department`, (err, res) => {
         if (err) throw err;
-        console.table(res);
 
-        connection.query(`SELECT name FROM employee_db.department`, (err, res) => {
-            if (err) throw err;
-
-            let deptOptions = [];
-            res.forEach((res) => {deptOptions.push(res.name)});
-            inquirer
-            .prompt([
+        // Put all department options in an array to choose from
+        let deptOptions = [];
+        res.forEach((res) => {deptOptions.push(res.name)});
+        inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'What is the title of the role?',
+                name: 'title'
+            },
+            {
+                type: 'input',
+                message: 'What is the salary of the role?',
+                name: 'salary'
+            },
+            {
+                type: 'list',
+                message: 'What department is the role in?',
+                name: 'department',
+                choices: deptOptions
+            }
+        ])
+        .then((ans) => {
+            // Get id of department chosen
+            connection.query(`SELECT id FROM department WHERE name = "${ans.department}"`, (err, res) => {
+                if (err) throw (err);
+                connection.query(`INSERT INTO role SET ?`,
                 {
-                    type: 'input',
-                    message: 'What is the title of the role?',
-                    name: 'title'
+                    title: ans.title,
+                    salary: ans.salary,
+                    department_id: res[0].id
                 },
-                {
-                    type: 'input',
-                    message: 'What is the salary of the role?',
-                    name: 'salary'
-                },
-                {
-                    type: 'list',
-                    message: 'What department is the role in?',
-                    name: 'department',
-                    choices: deptOptions
-                }
-            ])
-            .then((ans) => {
-                connection.query(`SELECT id FROM department WHERE name = "${ans.department}"`, (err, res) => {
-                    if (err) throw (err);
-                    connection.query(`INSERT INTO role SET ?`,
-                    {
-                        title: ans.title,
-                        salary: ans.salary,
-                        department_id: res[0].id
-                    },
-                    (err, res) => {
-                        if (err) throw err;
-                        console.log(`Role ${ans.title} created!`);
-                        init();
-                    });
-                })
-                
+                (err, res) => {
+                    if (err) throw err;
+                    console.log(`Role ${ans.title} created!`);
+                    init();
+                });
             })
+            
         })
     })
-    
 };
 
+// Delete a role using DELETE
 const removeRole = () => {
     connection.query(`SELECT * FROM employee_db.role;`, (err, res) => {
         if (err) throw err;
+        // Show all available roles
         console.table(res);
 
         inquirer
@@ -363,6 +387,7 @@ const removeRole = () => {
     })
 }
 
+// Connect to server and start initial function
 connection.connect((err) => {
     if (err) throw err;
     init();
