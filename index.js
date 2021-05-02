@@ -258,8 +258,10 @@ const addDept = () => {
         name: 'name'
     })
     .then((ans) => {
-        console.log(ans.name);
-        runQuery(`INSERT INTO department SET name = "${ans.name}"`);
+        connection.query(`INSERT INTO department SET name = "${ans.name}"`, (err, res) => {
+            if (err) throw err;
+            console.log(`${ans.name} department has been created!`)
+        });
     })
 };
 
@@ -275,8 +277,10 @@ const removeDept = () => {
             name: 'deptId'
         })
         .then((ans) => {
-            runQuery(`DELETE FROM employee_db.department WHERE id = ${ans.deptId};`);
-            console.log("Department ID " + ans.deptId + " has been deleted.");
+            connection.query(`DELETE FROM employee_db.department WHERE id = ${ans.deptId};`, (err, res) => {
+                if (err) throw err;
+                console.log("Department ID " + ans.deptId + " has been deleted.");
+            });
         })
     })
     
