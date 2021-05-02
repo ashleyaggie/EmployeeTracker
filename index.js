@@ -306,7 +306,7 @@ const addRole = () => {
                 },
                 {
                     type: 'list',
-                    message: 'What department is the role in? Please enter the ID.',
+                    message: 'What department is the role in?',
                     name: 'department',
                     choices: deptOptions
                 }
@@ -322,7 +322,7 @@ const addRole = () => {
                     },
                     (err, res) => {
                         if (err) throw err;
-                        console.log(`Department ${ans.title} created!`);
+                        console.log(`Role ${ans.title} created!`);
                         init();
                     });
                 })
