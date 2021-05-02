@@ -312,8 +312,21 @@ const addRole = () => {
                 }
             ])
             .then((ans) => {
-                console.log(ans);
-                // runQuery(`INSERT INTO department SET ?`);
+                connection.query(`SELECT id FROM department WHERE name = "${ans.department}"`, (err, res) => {
+                    if (err) throw (err);
+                    connection.query(`INSERT INTO role SET ?`,
+                    {
+                        title: ans.title,
+                        salary: ans.salary,
+                        department_id: res[0].id
+                    },
+                    (err, res) => {
+                        if (err) throw err;
+                        console.log(`Department ${ans.title} created!`);
+                        init();
+                    });
+                })
+                
             })
         })
     })
