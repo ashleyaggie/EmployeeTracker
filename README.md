@@ -21,11 +21,11 @@ Pending
 
 Unable to be deployed.
 
-[Link to video demonstration](Pending)
+[Link to video demonstration](https://drive.google.com/file/d/1JqODEnd3qy2dtn7n_FKd8Y5sKaMwLnTw/view)
 
 Example picture:
 
-![Picture of example database view](./assets/images/databaseAllEmployees.png)
+![Picture of example database view](./databaseAllEmployees.png)
 
 ## Criteria
 
