@@ -17,7 +17,11 @@
 
 ## Description
 
-Pending
+We were tasked with creating an inquirer-based application that allowed users to view and edit information within a database. For my application, I also chose to use dotenv to conceal my MySql password and user information.
+
+I used Inquirer and connection.query to define the queries I wanted to make in the database. I was able to also use a query to get the available options for a choice, push the options to an array, and use that array to give users the available options to choose from. I used console.table to first show a table of available options for certain requests, like deletion, and asked the user to input an ID based on the information available in the viewed table.
+
+I attempted to do the bonus of adding the salaries of departments, but I did not give myself enough time to research further into SUM and how it works. I would also like to revisit this to see about cleaning up the functions and putting them into a different file to aid readability.
 
 Unable to be deployed.
 
