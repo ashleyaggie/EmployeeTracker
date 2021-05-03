@@ -2,6 +2,7 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
 require('console.table');
+require('console.table');
 require('dotenv').config();
 
 // Set an array of options for the initial prompt of choices
